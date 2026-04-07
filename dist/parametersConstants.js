@@ -1,5 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const exportsObject = {
     tvLengths: {},
     staticLengths: {},
@@ -23,7 +21,7 @@ const define = function (name, value, hasSubParameter, tvLength, staticLength) {
         Object.defineProperty(exportsObject.tvLengths, value, {
             value: tvLength,
             enumerable: true,
-            writable: false,
+            writable: false, // non-writable, making it a constant.
         });
     }
     // is staticLength set and greater than 0.
@@ -33,7 +31,7 @@ const define = function (name, value, hasSubParameter, tvLength, staticLength) {
         Object.defineProperty(exportsObject.staticLengths, value, {
             value: staticLength,
             enumerable: true,
-            writable: false,
+            writable: false, // non-writable, making it a constant.
         });
     }
     // set defaults.
@@ -45,20 +43,20 @@ const define = function (name, value, hasSubParameter, tvLength, staticLength) {
         Object.defineProperty(exportsObject.hasSubParameters, value, {
             value: hasSubParameter,
             enumerable: true,
-            writable: false,
+            writable: false, // non-writable, making it a constant.
         });
     }
     // defining our constant.
     Object.defineProperty(exportsObject, name, {
         value,
         enumerable: true,
-        writable: false,
+        writable: false, // non-writable, making it a constant.
     });
     // defining our constant, reversed with key as value and value as key.
     Object.defineProperty(exportsObject, value, {
         value: name,
         enumerable: false,
-        writable: false,
+        writable: false, // non-writable, making it a constant.
     });
 };
 /*--Constants--
@@ -194,13 +192,13 @@ define('C1G2BlockWriteOpSpecResult', 354, false, 0, 9);
 Object.defineProperty(exportsObject, 'ENCODING_TV', {
     value: 1,
     enumerable: false,
-    writable: false,
+    writable: false, // non-writable, making it a constant.
 });
 // defining ENCODING_TLV.
 Object.defineProperty(exportsObject, 'ENCODING_TLV', {
     value: 2,
     enumerable: false,
-    writable: false,
+    writable: false, // non-writable, making it a constant.
 });
-exports.default = exportsObject;
+export default exportsObject;
 //# sourceMappingURL=parametersConstants.js.map

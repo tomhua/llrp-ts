@@ -1,6 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-var RfidReaderEvent;
+export var RfidReaderEvent;
 (function (RfidReaderEvent) {
     RfidReaderEvent["Timeout"] = "timeout";
     RfidReaderEvent["Connected"] = "connected";
@@ -10,5 +8,5 @@ var RfidReaderEvent;
     RfidReaderEvent["StartedRadioOperation"] = "startedRadioOperation";
     RfidReaderEvent["LlrpError"] = "llrpError";
     RfidReaderEvent["DidSeeTag"] = "didSeeTag";
-})(RfidReaderEvent = exports.RfidReaderEvent || (exports.RfidReaderEvent = {}));
+})(RfidReaderEvent || (RfidReaderEvent = {}));
 //# sourceMappingURL=llrp.js.map

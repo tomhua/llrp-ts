@@ -1,6 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-var MessagesType;
+export var MessagesType;
 (function (MessagesType) {
     MessagesType[MessagesType["GET_READER_CAPABILITIES"] = 1] = "GET_READER_CAPABILITIES";
     MessagesType[MessagesType["GET_READER_CAPABILITIES_RESPONSE"] = 11] = "GET_READER_CAPABILITIES_RESPONSE";
@@ -44,5 +42,5 @@ var MessagesType;
     MessagesType[MessagesType["CLOSE_CONNECTION"] = 14] = "CLOSE_CONNECTION";
     MessagesType[MessagesType["CLOSE_CONNECTION_RESPONSE"] = 4] = "CLOSE_CONNECTION_RESPONSE";
     MessagesType[MessagesType["CUSTOM_MESSAGE"] = 1023] = "CUSTOM_MESSAGE";
-})(MessagesType = exports.MessagesType || (exports.MessagesType = {}));
+})(MessagesType || (MessagesType = {}));
 //# sourceMappingURL=messagesType.js.map

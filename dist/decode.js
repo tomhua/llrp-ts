@@ -1,6 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const parametersConstants_1 = require("./parametersConstants");
+import parameterC from './parametersConstants';
 /**
  * Decodes a Buffer object to an object with key value
  * pairs that can be used to create a new LLRPMessage
@@ -8,7 +6,7 @@ const parametersConstants_1 = require("./parametersConstants");
  * @param  {Buffer} buffer  A buffer object.
  * @return {Object}         A key value pair that can be used to create a new LLRPMessage.
  */
-exports.decodeMessage = function (buffer, returnObject = []) {
+export const decodeMessage = function (buffer, returnObject = []) {
     // if we have an empty Buffer object.
     if (buffer.length === 0) {
         // end the recursion.
@@ -21,12 +19,12 @@ exports.decodeMessage = function (buffer, returnObject = []) {
         length,
         type: ((buffer[0] & 3) << 8) | buffer[1],
         id: buffer.readUInt32BE(6),
-        parameter: buffer.slice(10, length),
+        parameter: buffer.slice(10, length), // the parameter value would be starting from 11 up to the end of the curernt message.
     });
     // check if there are still parameters following this parameter.
     // if none, undefined will be returned and will not reach the step
     // of getting added to the returnObject.
-    exports.decodeMessage(buffer.slice(length), returnObject);
+    decodeMessage(buffer.slice(length), returnObject);
     return returnObject;
 };
 /**
@@ -37,7 +35,7 @@ exports.decodeMessage = function (buffer, returnObject = []) {
  * @param  {Array} returnObject  An array containing objects for LLRPParameter, recursion.
  * @return {Array}               An array containing all the decoded objects.
  */
-exports.decodeParameter = (buffer, returnObject = []) => {
+export const decodeParameter = (buffer, returnObject = []) => {
     // if we have an empty Buffer object.
     if (buffer.length === 0) {
         return undefined;
@@ -51,7 +49,7 @@ exports.decodeParameter = (buffer, returnObject = []) => {
     // if is TV-encoded (starts with first bit set as 1)
     if (buffer[0] & 128) {
         type = buffer[0] & 127; // type is the first 7 bits of the first octet.
-        length = parametersConstants_1.default.tvLengths[type]; // each TV has a defined length, we reference in our parameter constant.
+        length = parameterC.tvLengths[type]; // each TV has a defined length, we reference in our parameter constant.
         // since it is not present in a TV encoded buffer.
         value = buffer.slice(1, length); // the value in a TV starts from the second octet up the entire length of the buffer.
         reserved = 1; // reserved is set as 1 on the first octet's most significant bit.
@@ -62,10 +60,10 @@ exports.decodeParameter = (buffer, returnObject = []) => {
         value = buffer.slice(4, length); // the value in a TLV starts from the fifth octet up the entire length of the buffer.
     }
     // see if our parameter constant lists this buffer as having subParameters
-    if (parametersConstants_1.default.hasSubParameters[type]) {
+    if (parameterC.hasSubParameters[type]) {
         // check for subParameter via recursion.
         // undefined will be returned if none is found.
-        subParameters = exports.decodeParameter(value.slice(parametersConstants_1.default.staticLengths[type] - (length - value.length)));
+        subParameters = decodeParameter(value.slice(parameterC.staticLengths[type] - (length - value.length)));
     }
     // add to our returnObject our LLRPParameter key value pair.
     returnObject.push({
@@ -74,12 +72,12 @@ exports.decodeParameter = (buffer, returnObject = []) => {
         value,
         reserved,
         subParameters,
-        typeName: parametersConstants_1.default[type],
+        typeName: parameterC[type],
     });
     // check if there are still parameters following this parameter.
     // if none, undefined will be returned and will not reach the step
     // of getting added to the returnObject.
-    exports.decodeParameter(buffer.slice(length), returnObject);
+    decodeParameter(buffer.slice(length), returnObject);
     return returnObject;
 };
 //# sourceMappingURL=decode.js.map

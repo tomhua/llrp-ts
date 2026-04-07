@@ -1,5 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const constants = {
     // ROBoundarySpec TVL parameter
     ROSpecStartTriggerType: 0x00,
@@ -49,5 +47,5 @@ const constants = {
     tagInventoryStateAwareNo: 0,
     rfSensitivity: 1
 };
-exports.rospecConstants = Object.freeze(constants); // freeze prevents changes by users
+export const rospecConstants = Object.freeze(constants); // freeze prevents changes by users
 //# sourceMappingURL=rospecConstants.js.map

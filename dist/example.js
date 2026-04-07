@@ -1,6 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const index_1 = require("./index");
+import { LLRP, RfidReaderEvent } from './index';
 // reader tcp/ip config
 const config = {
     ipaddress: '192.168.1.90',
@@ -17,30 +15,33 @@ const config = {
             //  { number: 0, power: 31.5 } - switch all antennas on with 31.5 dBm
             //  { number: 1, power: 10.0 } - switch the first antenna on with 10 dBm
             { number: 1, power: 31.5 },
+            // { number: 2, power: 31.5 },
+            // { number: 3, power: 31.5 },
+            // { number: 4, power: 31.5 }
         ]
     }
 };
-const reader = new index_1.LLRP(config, console);
+const reader = new LLRP(config, console);
 reader.connect();
-reader.on(index_1.RfidReaderEvent.Timeout, () => {
+reader.on(RfidReaderEvent.Timeout, () => {
     console.log('timeout');
 });
-reader.on(index_1.RfidReaderEvent.Disconnect, (error) => {
+reader.on(RfidReaderEvent.Disconnect, (error) => {
     console.log('disconnect', error);
 });
-reader.on(index_1.RfidReaderEvent.Error, (error) => {
+reader.on(RfidReaderEvent.Error, (error) => {
     console.log(`error: JSON.stringify(${error})`);
 });
-reader.on(index_1.RfidReaderEvent.DisabledRadioOperation, () => {
+reader.on(RfidReaderEvent.DisabledRadioOperation, () => {
     console.log('disabledRadioOperation');
 });
-reader.on(index_1.RfidReaderEvent.StartedRadioOperation, () => {
+reader.on(RfidReaderEvent.StartedRadioOperation, () => {
     console.log('startedRadioOperation');
 });
-reader.on(index_1.RfidReaderEvent.LlrpError, (error) => {
+reader.on(RfidReaderEvent.LlrpError, (error) => {
     console.log('protocol error:', error);
 });
-reader.on(index_1.RfidReaderEvent.DidSeeTag, (tag) => {
+reader.on(RfidReaderEvent.DidSeeTag, (tag) => {
     console.log(`Read: ${JSON.stringify(tag)}`);
     // if (tag.EPC96) console.log('EPC96: ' + JSON.stringify(tag.EPC96));
     // if (tag.EPCData) console.log('EPCData: ' + JSON.stringify(tag.EPCData));

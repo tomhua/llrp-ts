@@ -1,10 +1,7 @@
-module.exports = {
+export default {
 	globals: {
 		'ts-jest': {
-			tsConfig: 'tsconfig.json',
-			diagnostics: {
-				pathRegex: /\.(spec|test)\.ts$/
-			}
+			tsConfig: 'tsconfig.json'
 		}
 	},
 	moduleFileExtensions: [

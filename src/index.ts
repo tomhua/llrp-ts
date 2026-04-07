@@ -6,7 +6,7 @@
  */
 import * as net from 'net';
 import { EventEmitter }  from 'events';
-import Int64 = require('node-int64');
+import Int64 from 'node-int64';
 
 import parameterC from './parametersConstants';
 import { LLRPMessage } from './messages';

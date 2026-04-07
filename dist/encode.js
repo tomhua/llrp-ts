@@ -1,12 +1,10 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Encodes to a writable buffer the LLRPMessage object.
  *
  * @param  {LLRPMessage} llrpMessage  object to encode to a buffer.
  * @return {Buffer}             writable buffer object
  */
-exports.encodeMessage = function (llrpMessage) {
+export const encodeMessage = function (llrpMessage) {
     // Create the buffer, should be the length of the message.
     // We will not account for slicing the data.
     const buffer = new Buffer(llrpMessage.getLength());
@@ -29,7 +27,7 @@ exports.encodeMessage = function (llrpMessage) {
  * @param  {LLRPParameter} llrpParameter object to encode to a buffer.
  * @return {Buffer}        writable buffer object.
  */
-exports.encodeParameter = function (llrpParameter) {
+export const encodeParameter = function (llrpParameter) {
     // Create the buffer, should be the length of the llrpParameter.
     // We will not account for slicing the data.
     const buffer = new Buffer(llrpParameter.getLength());

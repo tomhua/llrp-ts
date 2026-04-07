@@ -1,7 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const messagesType_1 = require("./interfaces/messagesType");
-class LLRPMessage {
+import { MessagesType } from './interfaces/messagesType';
+export class LLRPMessage {
     constructor(data) {
         this.version = {
             value: 1,
@@ -20,7 +18,7 @@ class LLRPMessage {
         this.getId = () => this.id.value;
         this.getLength = () => this.length.value;
         this.getReserved = () => this.reserved.value;
-        this.getTypeName = () => messagesType_1.MessagesType[this.type.value];
+        this.getTypeName = () => MessagesType[this.type.value];
         this.getParameter = () => this.parameter.value;
         this.setType(data.type);
         if (typeof data.id !== 'undefined') {
@@ -74,5 +72,4 @@ class LLRPMessage {
         };
     }
 }
-exports.LLRPMessage = LLRPMessage;
 //# sourceMappingURL=messages.js.map

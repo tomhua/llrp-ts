@@ -1,7 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const parametersConstants_1 = require("./parametersConstants");
-class LLRPParameter {
+import parameterC from './parametersConstants';
+export class LLRPParameter {
     constructor(data) {
         this.type = {
             value: data.type,
@@ -51,7 +49,7 @@ class LLRPParameter {
     /*--Get methods--
     -----------------------------------------------------------------------------*/
     getTypeName() {
-        return parametersConstants_1.default[this.type.value];
+        return parameterC[this.type.value];
     }
     getType() {
         return this.type.value;
@@ -70,14 +68,13 @@ class LLRPParameter {
     }
     getEncoding() {
         if (this.isTV(this.type.value)) {
-            return parametersConstants_1.default.ENCODING_TV;
+            return parameterC.ENCODING_TV;
         }
-        return parametersConstants_1.default.ENCODING_TLV;
+        return parameterC.ENCODING_TLV;
     }
     isTV(type) {
         // TV (type-value) is from 0-127
         return (type < 128);
     }
 }
-exports.LLRPParameter = LLRPParameter;
 //# sourceMappingURL=parameters.js.map
