@@ -2,12 +2,12 @@
  * Low Level Reader Protocol  (LLRP) standard https://www.gs1.org/sites/default/files/docs/epc/llrp_1_1-standard-20101013.pdf
  * Binary Encoding for LLRP are descibed at page 125 of the standard.
  */
-import parameterC from './parametersConstants';
-import { rospecConstants } from './rospecConstants';
-import { LLRPParameter } from './parameters';
-import { LLRPMessage } from './messages';
-import { encodeMessage, encodeParameter } from './encode';
-import { MessagesType } from './interfaces/messagesType';
+import parameterC from './parametersConstants.js';
+import { rospecConstants } from './rospecConstants.js';
+import { LLRPParameter } from './parameters.js';
+import { LLRPMessage } from './messages.js';
+import { encodeMessage, encodeParameter } from './encode.js';
+import { MessagesType } from './interfaces/messagesType.js';
 const vendorId = rospecConstants.impinjVendorId;
 const MAX_RFID_POWER_FOR_THE_EU = 31.50; // dBm
 export class GetLlrpMessage {

@@ -1,6 +1,6 @@
-import parameterC from './parametersConstants';
+import parameterC from './parametersConstants.js';
 
-import { Parameter, LlrpFieldType, LlrpParameter } from './interfaces/parameters';
+import { Parameter, LlrpFieldType, LlrpParameter } from './interfaces/parameters.js';
 
 export class LLRPParameter implements LlrpParameter {
     private type: LlrpFieldType;

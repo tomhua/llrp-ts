@@ -1,4 +1,4 @@
-import { LLRP, RfidReaderEvent } from './index';
+import { LLRP, RfidReaderEvent } from './index.js';
 // reader tcp/ip config
 const config = {
     ipaddress: '192.168.1.90',

@@ -1,4 +1,4 @@
-import { MessagesType } from './messagesType';
+import { MessagesType } from './messagesType.js';
 
 export interface Message {
     type: MessagesType;

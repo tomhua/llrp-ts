@@ -3,16 +3,16 @@
  * Binary Encoding for LLRP are descibed at page 125 of the standard.
  */
 
-import parameterC from './parametersConstants';
-import { rospecConstants } from './rospecConstants';
-import { LLRPParameter } from './parameters';
-import { LLRPMessage } from './messages';
-import { encodeMessage, encodeParameter } from './encode';
+import parameterC from './parametersConstants.js';
+import { rospecConstants } from './rospecConstants.js';
+import { LLRPParameter } from './parameters.js';
+import { LLRPMessage } from './messages.js';
+import { encodeMessage, encodeParameter } from './encode.js';
 
-import { RospecParameters, AntennaConfig } from './interfaces/llrp';
-import { MessagesType } from './interfaces/messagesType';
-import { Message, LlrpMessage } from './interfaces/messages';
-import { Parameter } from './interfaces/parameters';
+import { RospecParameters, AntennaConfig } from './interfaces/llrp.js';
+import { MessagesType } from './interfaces/messagesType.js';
+import { Message, LlrpMessage } from './interfaces/messages.js';
+import { Parameter } from './interfaces/parameters.js';
 
 const vendorId: number = rospecConstants.impinjVendorId;
 

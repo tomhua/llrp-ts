@@ -1,4 +1,4 @@
-import { MessagesType } from './interfaces/messagesType';
+import { MessagesType } from './interfaces/messagesType.js';
 export class LLRPMessage {
     constructor(data) {
         this.version = {

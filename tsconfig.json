@@ -1,12 +1,13 @@
 {
   "compilerOptions": {
     "outDir": "dist",
-    "module": "es2020",
+    "module": "node16",
     "target": "es2020",
     "sourceMap": true,
-    "moduleResolution": "node",
+    "moduleResolution": "node16",
     "experimentalDecorators": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true
   },
   "include": [
     "src/**/*"

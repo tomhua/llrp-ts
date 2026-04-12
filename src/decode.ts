@@ -1,6 +1,6 @@
-import parameterC from './parametersConstants';
+import parameterC from './parametersConstants.js';
 
-import { ObjectMessageElement, ObjectParameterElement } from './interfaces/decode';
+import { ObjectMessageElement, ObjectParameterElement } from './interfaces/decode.js';
 
 /**
  * Decodes a Buffer object to an object with key value

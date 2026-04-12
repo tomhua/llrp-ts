@@ -1,5 +1,5 @@
-import { MessagesType } from './interfaces/messagesType';
-import { Message, LlrpMessage, LlrpFieldType } from './interfaces/messages';
+import { MessagesType } from './interfaces/messagesType.js';
+import { Message, LlrpMessage, LlrpFieldType } from './interfaces/messages.js';
 
 export class LLRPMessage implements LlrpMessage {
     public parameter: {

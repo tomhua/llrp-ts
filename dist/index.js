@@ -7,14 +7,14 @@
 import * as net from 'net';
 import { EventEmitter } from 'events';
 import Int64 from 'node-int64';
-import parameterC from './parametersConstants';
-import { LLRPMessage } from './messages';
-import { decodeMessage, decodeParameter } from './decode';
-import { GetLlrpMessage } from './getLlrpMessage';
-import { RfidReaderEvent } from './interfaces/llrp';
-import { MessagesType } from './interfaces/messagesType';
-import { CustomParameterSubType } from './interfaces/parameters';
-export * from './interfaces/llrp';
+import parameterC from './parametersConstants.js';
+import { LLRPMessage } from './messages.js';
+import { decodeMessage, decodeParameter } from './decode.js';
+import { GetLlrpMessage } from './getLlrpMessage.js';
+import { RfidReaderEvent } from './interfaces/llrp.js';
+import { MessagesType } from './interfaces/messagesType.js';
+import { CustomParameterSubType } from './interfaces/parameters.js';
+export * from './interfaces/llrp.js';
 const defaultRoSpecId = 1;
 export class LLRP extends EventEmitter {
     constructor(config, logger) {

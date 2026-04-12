@@ -42,5 +42,5 @@ export var MessagesType;
     MessagesType[MessagesType["CLOSE_CONNECTION"] = 14] = "CLOSE_CONNECTION";
     MessagesType[MessagesType["CLOSE_CONNECTION_RESPONSE"] = 4] = "CLOSE_CONNECTION_RESPONSE";
     MessagesType[MessagesType["CUSTOM_MESSAGE"] = 1023] = "CUSTOM_MESSAGE";
-})(MessagesType || (MessagesType = {}));
+})(MessagesType = MessagesType || (MessagesType = {}));
 //# sourceMappingURL=messagesType.js.map

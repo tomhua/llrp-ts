@@ -8,5 +8,5 @@ export var RfidReaderEvent;
     RfidReaderEvent["StartedRadioOperation"] = "startedRadioOperation";
     RfidReaderEvent["LlrpError"] = "llrpError";
     RfidReaderEvent["DidSeeTag"] = "didSeeTag";
-})(RfidReaderEvent || (RfidReaderEvent = {}));
+})(RfidReaderEvent = RfidReaderEvent || (RfidReaderEvent = {}));
 //# sourceMappingURL=llrp.js.map

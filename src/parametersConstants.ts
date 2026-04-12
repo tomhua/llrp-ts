@@ -1,4 +1,4 @@
-import { ParameterConstants } from './interfaces/parametersConstants';
+import { ParameterConstants } from './interfaces/parametersConstants.js';
 
 const exportsObject: ParameterConstants = {
     tvLengths: {},

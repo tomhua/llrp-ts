@@ -1,4 +1,4 @@
-import parameterC from './parametersConstants';
+import parameterC from './parametersConstants.js';
 /**
  * Decodes a Buffer object to an object with key value
  * pairs that can be used to create a new LLRPMessage

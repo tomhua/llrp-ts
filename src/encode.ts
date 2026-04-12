@@ -1,5 +1,5 @@
-import { LlrpMessage } from './interfaces/messages';
-import { LlrpParameter } from './interfaces/parameters';
+import { LlrpMessage } from './interfaces/messages.js';
+import { LlrpParameter } from './interfaces/parameters.js';
 
 /**
  * Encodes to a writable buffer the LLRPMessage object.

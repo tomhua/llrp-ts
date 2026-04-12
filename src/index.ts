@@ -8,10 +8,10 @@ import * as net from 'net';
 import { EventEmitter }  from 'events';
 import Int64 from 'node-int64';
 
-import parameterC from './parametersConstants';
-import { LLRPMessage } from './messages';
-import { decodeMessage, decodeParameter } from './decode';
-import { GetLlrpMessage } from './getLlrpMessage';
+import parameterC from './parametersConstants.js';
+import { LLRPMessage } from './messages.js';
+import { decodeMessage, decodeParameter } from './decode.js';
+import { GetLlrpMessage } from './getLlrpMessage.js';
 
 import {
     TagInformation,
@@ -20,12 +20,12 @@ import {
     RadioOperationConfig,
     Logger,
     RfidReaderEvent
-} from './interfaces/llrp';
-import { LlrpMessage } from './interfaces/messages';
-import { ObjectMessageElement, ObjectParameterElement } from './interfaces/decode';
-import { MessagesType } from './interfaces/messagesType';
-import { CustomParameterSubType } from './interfaces/parameters';
-export * from './interfaces/llrp';
+} from './interfaces/llrp.js';
+import { LlrpMessage } from './interfaces/messages.js';
+import { ObjectMessageElement, ObjectParameterElement } from './interfaces/decode.js';
+import { MessagesType } from './interfaces/messagesType.js';
+import { CustomParameterSubType } from './interfaces/parameters.js';
+export * from './interfaces/llrp.js';
 
 const defaultRoSpecId: number = 1;
 

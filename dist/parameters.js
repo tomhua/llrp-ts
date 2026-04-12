@@ -1,4 +1,4 @@
-import parameterC from './parametersConstants';
+import parameterC from './parametersConstants.js';
 export class LLRPParameter {
     constructor(data) {
         this.type = {

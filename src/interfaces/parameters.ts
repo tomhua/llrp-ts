@@ -1,4 +1,4 @@
-import { MessageParameter } from './messages';
+import { MessageParameter } from './messages.js';
 
 export interface Parameter {
     type: number;
