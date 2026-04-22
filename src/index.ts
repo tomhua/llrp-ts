@@ -59,11 +59,12 @@ export class LLRP extends EventEmitter implements LlrpReader {
         this.isReaderConfigSet = config.isReaderConfigSet || this.isReaderConfigSet;
         this.isStartROSpecSent = config.isStartROSpecSent || this.isStartROSpecSent;
         this.isReaderConfigReset = config.isReaderConfigReset || this.isReaderConfigReset;
+        this.enableTransmitter = config.isEnableTransmitter || this.enableTransmitter;
     }
 
     public connect(): void {
         this.connected = true;
-        this.enableTransmitter = true;
+        // this.enableTransmitter = true;
 
         // timeout after 60 seconds.
         this.socket.setTimeout(60000, () => {

@@ -40,6 +40,7 @@ export interface ReaderConfig {
     isReaderConfigSet?: boolean;
     isStartROSpecSent?: boolean;
     isReaderConfigReset?: boolean;
+    isEnableTransmitter?: boolean;
 }
 
 export interface LlrpReader {
