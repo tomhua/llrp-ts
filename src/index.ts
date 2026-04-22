@@ -40,7 +40,7 @@ export class LLRP extends EventEmitter implements LlrpReader {
     private isExtensionsEnabled: boolean = false;
     private sendEnableRospecOnceMore: boolean = true;
     private radioOperationConfig: RadioOperationConfig = <RadioOperationConfig>{};
-    private enableTransmitter: boolean = true;
+    private enableTransmitter: boolean = false;
 
     private socket: net.Socket = new net.Socket();
     private client: net.Socket = null;
@@ -114,6 +114,10 @@ export class LLRP extends EventEmitter implements LlrpReader {
     public disconnect(): boolean {
         if (this.socket.destroyed) {
             return false;
+        }
+
+        if (this.enableTransmitter) {
+            this.disableRFTransmitter();
         }
 
         this.connected = false;

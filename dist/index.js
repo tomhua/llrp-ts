@@ -29,7 +29,7 @@ export class LLRP extends EventEmitter {
         this.isExtensionsEnabled = false;
         this.sendEnableRospecOnceMore = true;
         this.radioOperationConfig = {};
-        this.enableTransmitter = true;
+        this.enableTransmitter = false;
         this.socket = new net.Socket();
         this.client = null;
         this.connected = false;
@@ -90,6 +90,9 @@ export class LLRP extends EventEmitter {
     disconnect() {
         if (this.socket.destroyed) {
             return false;
+        }
+        if (this.enableTransmitter) {
+            this.disableRFTransmitter();
         }
         this.connected = false;
         this.sendMessage(this.client, GetLlrpMessage.deleteRoSpec(defaultRoSpecId));
