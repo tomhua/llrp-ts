@@ -123,7 +123,9 @@ export class LLRP extends EventEmitter implements LlrpReader {
         }
 
         this.connected = false;
-        this.sendMessage(this.client, GetLlrpMessage.deleteRoSpec(defaultRoSpecId));
+        if (this.allReaderROSpecDeleted) {
+            this.sendMessage(this.client, GetLlrpMessage.deleteRoSpec(defaultRoSpecId));
+        }
         this.resetIsStartROSpecSent();
 
         return true;
@@ -179,9 +181,9 @@ export class LLRP extends EventEmitter implements LlrpReader {
                 // This send-receive is the most basic form to read a tag in llrp.
                 switch (message.getType()) {
                     // TODO:
-                    // case messageC.GET_READER_CONFIG_RESPONSE:
-                    //      handleGetReaderConfig(message);
-                    //      break;
+                    case MessagesType.GET_READER_CONFIG_RESPONSE:
+                         this.handleGetReaderConfig(message);
+                         break;
 
                     case MessagesType.READER_EVENT_NOTIFICATION:
                         this.handleReaderNotification(message);
@@ -265,6 +267,14 @@ export class LLRP extends EventEmitter implements LlrpReader {
                 this.lastLlrpStatusCode = statusCode;
             }
         });
+    }
+
+    private handleGetReaderConfig(message: LlrpMessage): void {
+        const parametersKeyValue: ObjectParameterElement[] = decodeParameter(message.getParameter());
+        if (!parametersKeyValue) {
+            return;
+        }
+        this.log(`GetReaderConfig: ${message.getTypeName()}`);
     }
 
     private handleReaderNotification(message: LlrpMessage): void {
