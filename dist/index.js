@@ -24,10 +24,10 @@ export class LLRP extends EventEmitter {
         this.isReaderConfigSet = false;
         this.isStartROSpecSent = false;
         this.isReaderConfigReset = false;
-        this.allReaderROSpecDeleted = false;
+        this.allReaderRospecDeleted = false;
         this.allReaderAccessSpecDeleted = false;
         this.isExtensionsEnabled = false;
-        this.sendEnableROSpecOnceMore = true;
+        this.sendEnableRospecOnceMore = true;
         this.radioOperationConfig = {};
         this.enableTransmitter = false;
         this.socket = new net.Socket();
@@ -42,13 +42,9 @@ export class LLRP extends EventEmitter {
         this.isReaderConfigSet = config.isReaderConfigSet || this.isReaderConfigSet;
         this.isStartROSpecSent = config.isStartROSpecSent || this.isStartROSpecSent;
         this.isReaderConfigReset = config.isReaderConfigReset || this.isReaderConfigReset;
-        this.enableTransmitter = config.isEnableTransmitter || this.enableTransmitter;
-        this.allReaderROSpecDeleted = config.allReaderROSpecDeleted || this.allReaderROSpecDeleted;
-        this.sendEnableROSpecOnceMore = config.sendEnableROSpecOnceMore || this.sendEnableROSpecOnceMore;
     }
     connect() {
         this.connected = true;
-        // this.enableTransmitter = true;
         // timeout after 60 seconds.
         this.socket.setTimeout(60000, () => {
             if (this.connected) {
@@ -93,9 +89,6 @@ export class LLRP extends EventEmitter {
         if (this.socket.destroyed) {
             return false;
         }
-        if (this.enableTransmitter) {
-            this.disableRFTransmitter();
-        }
         this.connected = false;
         this.sendMessage(this.client, GetLlrpMessage.deleteRoSpec(defaultRoSpecId));
         this.resetIsStartROSpecSent();
@@ -136,7 +129,7 @@ export class LLRP extends EventEmitter {
                 // possible we have more than 1 message in a reply.
                 const message = new LLRPMessage(messagesKeyValue[index]);
                 this.log(`Receiving: ${message.getTypeName()}`);
-                this.checkErrorInResponse(message);
+                // this.checkErrorInResponse(message);
                 // Check message type and send appropriate response.
                 // This send-receive is the most basic form to read a tag in llrp.
                 switch (message.getType()) {
@@ -156,7 +149,7 @@ export class LLRP extends EventEmitter {
                         this.sendEnableRospec(true);
                         break;
                     case MessagesType.ENABLE_ROSPEC_RESPONSE:
-                        if (this.sendEnableROSpecOnceMore) {
+                        if (this.sendEnableRospecOnceMore) {
                             this.sendEnableRospec(false);
                         }
                         else {
@@ -169,8 +162,8 @@ export class LLRP extends EventEmitter {
                         }
                         break;
                     case MessagesType.DELETE_ROSPEC_RESPONSE:
-                        if (!this.allReaderROSpecDeleted) {
-                            this.allReaderROSpecDeleted = true;
+                        if (!this.allReaderRospecDeleted) {
+                            this.allReaderRospecDeleted = true;
                             this.handleReaderConfiguration();
                         }
                         else {
@@ -249,7 +242,7 @@ export class LLRP extends EventEmitter {
             this.sendMessage(this.client, GetLlrpMessage.deleteAllAccessSpec());
             this.allReaderAccessSpecDeleted = true;
         }
-        else if (!this.allReaderROSpecDeleted) {
+        else if (!this.allReaderRospecDeleted) {
             this.sendMessage(this.client, GetLlrpMessage.deleteAllROSpecs());
         }
         else if (!this.isExtensionsEnabled) {
@@ -385,7 +378,7 @@ export class LLRP extends EventEmitter {
         return (data[0] & 3) << 8 | data[1];
     }
     sendEnableRospec(sendTwoTimes) {
-        this.sendEnableROSpecOnceMore = sendTwoTimes ? true : false;
+        this.sendEnableRospecOnceMore = sendTwoTimes ? true : false;
         this.sendMessage(this.client, GetLlrpMessage.enableRoSpec(defaultRoSpecId));
     }
     /**

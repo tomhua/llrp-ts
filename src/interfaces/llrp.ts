@@ -39,10 +39,7 @@ export interface ReaderConfig {
     radioOperationConfig: RadioOperationConfig;
     isReaderConfigSet?: boolean;
     isStartROSpecSent?: boolean;
-    allReaderROSpecDeleted?: boolean;
-    sendEnableROSpecOnceMore?: boolean;
     isReaderConfigReset?: boolean;
-    isEnableTransmitter?: boolean;
 }
 
 export interface LlrpReader {

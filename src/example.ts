@@ -4,23 +4,47 @@ import { ReaderConfig, TagInformation } from './interfaces/llrp.js';
 
 // reader tcp/ip config
 const config: ReaderConfig = {
-    ipaddress: '192.168.1.90',
+    ipaddress: '192.168.1.53',
     port : 5084,
     radioOperationConfig: {
         enableReadingTid: true,
-        modeIndex: 3,
-        tagPopulation: 4,
+        modeIndex: 1002,
+        tagPopulation: 32,
         channelIndex: 1,
-        inventorySearchMode: 1, // 1 - Single target (impinj custom parameter)
+        inventorySearchMode: 2, // 1 - Single target (impinj custom parameter)
         antennasConfig: [
-        // NOTE:
-        // if no object in array it is switch all antennas on
-        //  { number: 0, power: 31.5 } - switch all antennas on with 31.5 dBm
-        //  { number: 1, power: 10.0 } - switch the first antenna on with 10 dBm
-            { number: 1, power: 31.5 },
-            // { number: 2, power: 31.5 },
-            // { number: 3, power: 31.5 },
-            // { number: 4, power: 31.5 }
+            { number: 1, power: 30 }, // 天线 1
+            { number: 2, power: 30 }, // 天线 2
+            { number: 3, power: 30 }, // 天线 3
+            { number: 4, power: 30 }, // 天线 4
+            { number: 5, power: 30 }, // 天线 4
+            { number: 6, power: 30 }, // 天线 4
+            { number: 7, power: 30 }, // 天线 4
+            { number: 8, power: 30 }, // 天线 4
+            { number: 9, power: 30 }, // 天线 4
+            { number: 10, power: 30 }, // 天线 4
+            { number: 11, power: 30 }, // 天线 4
+            { number: 12, power: 30 }, // 天线 4
+            { number: 13, power: 30 }, // 天线 4
+            { number: 14, power: 30 }, // 天线 4
+            { number: 15, power: 30 }, // 天线 4
+            { number: 16, power: 30 }, // 天线 4
+            { number: 17, power: 30 }, // 天线 4
+            { number: 18, power: 30 }, // 天线 4
+            { number: 19, power: 30 }, // 天线 4
+            { number: 20, power: 30 }, // 天线 4
+            { number: 21, power: 30 }, // 天线 4
+            { number: 22, power: 30 }, // 天线 4
+            { number: 23, power: 30 }, // 天线 4
+            { number: 24, power: 30 }, // 天线 4
+            { number: 25, power: 30 }, // 天线 4
+            { number: 26, power: 30 }, // 天线 4
+            { number: 27, power: 30 }, // 天线 4
+            { number: 28, power: 30 }, // 天线 4
+            { number: 29, power: 30 }, // 天线 4
+            { number: 30, power: 30 }, // 天线 4
+            { number: 31, power: 30 }, // 天线 4
+            { number: 32, power: 30 } // 天线 4
         ]
     }
 };
