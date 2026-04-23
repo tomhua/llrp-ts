@@ -24,10 +24,10 @@ export class LLRP extends EventEmitter {
         this.isReaderConfigSet = false;
         this.isStartROSpecSent = false;
         this.isReaderConfigReset = false;
-        this.allReaderRospecDeleted = false;
+        this.allReaderROSpecDeleted = false;
         this.allReaderAccessSpecDeleted = false;
         this.isExtensionsEnabled = false;
-        this.sendEnableRospecOnceMore = true;
+        this.sendEnableROSpecOnceMore = true;
         this.radioOperationConfig = {};
         this.enableTransmitter = false;
         this.socket = new net.Socket();
@@ -43,6 +43,8 @@ export class LLRP extends EventEmitter {
         this.isStartROSpecSent = config.isStartROSpecSent || this.isStartROSpecSent;
         this.isReaderConfigReset = config.isReaderConfigReset || this.isReaderConfigReset;
         this.enableTransmitter = config.isEnableTransmitter || this.enableTransmitter;
+        this.allReaderROSpecDeleted = config.allReaderROSpecDeleted || this.allReaderROSpecDeleted;
+        this.sendEnableROSpecOnceMore = config.sendEnableROSpecOnceMore || this.sendEnableROSpecOnceMore;
     }
     connect() {
         this.connected = true;
@@ -154,7 +156,7 @@ export class LLRP extends EventEmitter {
                         this.sendEnableRospec(true);
                         break;
                     case MessagesType.ENABLE_ROSPEC_RESPONSE:
-                        if (this.sendEnableRospecOnceMore) {
+                        if (this.sendEnableROSpecOnceMore) {
                             this.sendEnableRospec(false);
                         }
                         else {
@@ -167,8 +169,8 @@ export class LLRP extends EventEmitter {
                         }
                         break;
                     case MessagesType.DELETE_ROSPEC_RESPONSE:
-                        if (!this.allReaderRospecDeleted) {
-                            this.allReaderRospecDeleted = true;
+                        if (!this.allReaderROSpecDeleted) {
+                            this.allReaderROSpecDeleted = true;
                             this.handleReaderConfiguration();
                         }
                         else {
@@ -247,7 +249,7 @@ export class LLRP extends EventEmitter {
             this.sendMessage(this.client, GetLlrpMessage.deleteAllAccessSpec());
             this.allReaderAccessSpecDeleted = true;
         }
-        else if (!this.allReaderRospecDeleted) {
+        else if (!this.allReaderROSpecDeleted) {
             this.sendMessage(this.client, GetLlrpMessage.deleteAllROSpecs());
         }
         else if (!this.isExtensionsEnabled) {
@@ -383,7 +385,7 @@ export class LLRP extends EventEmitter {
         return (data[0] & 3) << 8 | data[1];
     }
     sendEnableRospec(sendTwoTimes) {
-        this.sendEnableRospecOnceMore = sendTwoTimes ? true : false;
+        this.sendEnableROSpecOnceMore = sendTwoTimes ? true : false;
         this.sendMessage(this.client, GetLlrpMessage.enableRoSpec(defaultRoSpecId));
     }
     /**
