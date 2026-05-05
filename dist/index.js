@@ -129,7 +129,7 @@ export class LLRP extends EventEmitter {
                 // possible we have more than 1 message in a reply.
                 const message = new LLRPMessage(messagesKeyValue[index]);
                 this.log(`Receiving: ${message.getTypeName()}`);
-                // this.checkErrorInResponse(message);
+                this.checkErrorInResponse(message);
                 // Check message type and send appropriate response.
                 // This send-receive is the most basic form to read a tag in llrp.
                 switch (message.getType()) {
