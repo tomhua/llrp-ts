@@ -40,7 +40,9 @@ export class LLRP extends EventEmitter implements LlrpReader {
     private isExtensionsEnabled: boolean = false;
     private sendEnableRospecOnceMore: boolean = true;
     private radioOperationConfig: RadioOperationConfig = <RadioOperationConfig>{};
-    private enableTransmitter: boolean = false;
+    private enableTransmitter: boolean = true;
+    private autoStartScan: boolean = true;
+    private isRoSpecAdded: boolean = false;
 
     private socket: net.Socket = new net.Socket();
     private client: net.Socket = null;
@@ -59,10 +61,12 @@ export class LLRP extends EventEmitter implements LlrpReader {
         this.isReaderConfigSet = config.isReaderConfigSet || this.isReaderConfigSet;
         this.isStartROSpecSent = config.isStartROSpecSent || this.isStartROSpecSent;
         this.isReaderConfigReset = config.isReaderConfigReset || this.isReaderConfigReset;
+        this.autoStartScan = config.autoStartScan !== undefined ? config.autoStartScan : this.autoStartScan;
     }
 
     public connect(): void {
         this.connected = true;
+        this.enableTransmitter = true;
 
         // timeout after 60 seconds.
         this.socket.setTimeout(60000, () => {
@@ -77,7 +81,7 @@ export class LLRP extends EventEmitter implements LlrpReader {
 
         // connect with reader
         this.client = this.socket.connect(this.port, this.ipaddress, () => {
-            this.log(`Connected to ${this.ipaddress}:${this.port}`);
+            this.log(`Connected to ${this.ipaddress}:${this.port}, autoStartScan: ${this.autoStartScan}`);
             process.nextTick(() => {
                 this.emit(RfidReaderEvent.Connected);
             });
@@ -88,10 +92,10 @@ export class LLRP extends EventEmitter implements LlrpReader {
             this.handleReceivedData(data);
         });
 
-        // // the reader or client has ended the connection.
+        // the reader or client has ended the connection.
         this.client.on('end', () => {
             // the session has ended
-            this.log('client disconnected');
+            this.log(`client disconnected, connected flag: ${this.connected}, isRoSpecAdded: ${this.isRoSpecAdded}`);
             process.nextTick(() => {
                 this.connected = false;
                 this.emit(RfidReaderEvent.Disconnect, new Error('Client disconnected.'));
@@ -115,7 +119,11 @@ export class LLRP extends EventEmitter implements LlrpReader {
         }
 
         this.connected = false;
-        this.sendMessage(this.client, GetLlrpMessage.deleteRoSpec(defaultRoSpecId));
+        if (this.isRoSpecAdded) {
+            this.sendMessage(this.client, GetLlrpMessage.deleteRoSpec(defaultRoSpecId));
+        } else {
+            this.sendMessage(this.client, GetLlrpMessage.closeConnection());
+        }
         this.resetIsStartROSpecSent();
 
         return true;
@@ -138,7 +146,21 @@ export class LLRP extends EventEmitter implements LlrpReader {
             return false;
         }
         this.enableTransmitter = true;
-        this.sendEnableRospec(true);
+        
+        if (!this.isReaderConfigSet) {
+            this.handleReaderConfiguration();
+        } else if (!this.isStartROSpecSent) {
+            this.sendMessage(
+                this.client,
+                GetLlrpMessage.addRoSpec(
+                    defaultRoSpecId,
+                    this.radioOperationConfig
+                )
+            );
+            this.isRoSpecAdded = true;
+        } else {
+            this.sendEnableRospec(true);
+        }
 
         return true;
     }
@@ -165,7 +187,7 @@ export class LLRP extends EventEmitter implements LlrpReader {
                 const message: LlrpMessage = new LLRPMessage(messagesKeyValue[index]);
                 this.log(`Receiving: ${message.getTypeName()}`);
 
-                // this.checkErrorInResponse(message);
+                this.checkErrorInResponse(message);
 
                 // Check message type and send appropriate response.
                 // This send-receive is the most basic form to read a tag in llrp.
@@ -205,10 +227,11 @@ export class LLRP extends EventEmitter implements LlrpReader {
                         break;
 
                     case MessagesType.DELETE_ROSPEC_RESPONSE:
+                        this.log(`DELETE_ROSPEC_RESPONSE: allReaderRospecDeleted=${this.allReaderRospecDeleted}, connected=${this.connected}, isRoSpecAdded=${this.isRoSpecAdded}`);
                         if (!this.allReaderRospecDeleted) {
                             this.allReaderRospecDeleted = true;
                             this.handleReaderConfiguration();
-                        } else {
+                        } else if (!this.connected) {
                             this.sendMessage(this.client, GetLlrpMessage.closeConnection());
                         }
                         break;
@@ -285,7 +308,7 @@ export class LLRP extends EventEmitter implements LlrpReader {
         if (!this.isReaderConfigReset) {                   // reset them.
             this.client.write(GetLlrpMessage.resetConfigurationToFactoryDefaults());
             this.isReaderConfigReset = true;               // we have reset the reader configuration.
-        } else {
+        } else if (this.autoStartScan) {
             this.sendStartROSpec();
         }
     }
@@ -303,7 +326,7 @@ export class LLRP extends EventEmitter implements LlrpReader {
         } else if (!this.isReaderConfigSet) {                     // set them.
             this.sendMessage(this.client, GetLlrpMessage.setReaderConfig());   // send SET_READER_CONFIG, global reader configuration in reading tags.
             this.isReaderConfigSet = true;                 // we have set the reader configuration.
-        } else {
+        } else if (this.autoStartScan) {
             this.sendMessage(
                 this.client,
                 GetLlrpMessage.addRoSpec(
@@ -311,6 +334,7 @@ export class LLRP extends EventEmitter implements LlrpReader {
                     this.radioOperationConfig
                 )
             );
+            this.isRoSpecAdded = true;
         }
     }
 
@@ -336,53 +360,53 @@ export class LLRP extends EventEmitter implements LlrpReader {
                             tag.EPCData = subParameters[parameterC.EPCData].toString('hex');
                         }
 
-                        if (subParameters[parameterC.AntennaID]) {
+                        if (subParameters[parameterC.AntennaID] && subParameters[parameterC.AntennaID].length >= 2) {
                             tag.antennaID = subParameters[parameterC.AntennaID].readUInt16BE(0);
                         }
 
-                        if (subParameters[parameterC.TagSeenCount]) {
+                        if (subParameters[parameterC.TagSeenCount] && subParameters[parameterC.TagSeenCount].length >= 2) {
                             tag.tagSeenCount = subParameters[parameterC.TagSeenCount].readUInt16BE(0);
                         }
 
-                        if (subParameters[parameterC.PeakRSSI]) {
+                        if (subParameters[parameterC.PeakRSSI] && subParameters[parameterC.PeakRSSI].length >= 1) {
                             tag.peakRSSI = subParameters[parameterC.PeakRSSI].readInt8(0);
                         }
 
-                        if (subParameters[parameterC.ROSpecID]) {
+                        if (subParameters[parameterC.ROSpecID] && subParameters[parameterC.ROSpecID].length >= 4) {
                             tag.roSpecID = subParameters[parameterC.ROSpecID].readUInt32BE(0);
                         }
 
-                        if (subParameters[parameterC.SpecIndex]) {
+                        if (subParameters[parameterC.SpecIndex] && subParameters[parameterC.SpecIndex].length >= 2) {
                             tag.specIndex = subParameters[parameterC.SpecIndex].readUInt16BE(0);
                         }
 
-                        if (subParameters[parameterC.InventoryParameterSpecID]) {
+                        if (subParameters[parameterC.InventoryParameterSpecID] && subParameters[parameterC.InventoryParameterSpecID].length >= 2) {
                             tag.inventoryParameterSpecID = subParameters[parameterC.InventoryParameterSpecID].readUInt16BE(0);
                         }
 
-                        if (subParameters[parameterC.ChannelIndex]) {
+                        if (subParameters[parameterC.ChannelIndex] && subParameters[parameterC.ChannelIndex].length >= 2) {
                             tag.channelIndex = subParameters[parameterC.ChannelIndex].readUInt16BE(0);
                         }
 
-                        if (subParameters[parameterC.C1G2PC]) {
+                        if (subParameters[parameterC.C1G2PC] && subParameters[parameterC.C1G2PC].length >= 2) {
                             tag.C1G2PC = subParameters[parameterC.C1G2PC].readUInt16BE(0);
                         }
 
-                        if (subParameters[parameterC.C1G2CRC]) {
+                        if (subParameters[parameterC.C1G2CRC] && subParameters[parameterC.C1G2CRC].length >= 2) {
                             tag.C1G2CRC = subParameters[parameterC.C1G2CRC].readUInt16BE(0);
                         }
 
-                        if (subParameters[parameterC.AccessSpecID]) {
+                        if (subParameters[parameterC.AccessSpecID] && subParameters[parameterC.AccessSpecID].length >= 4) {
                             tag.accessSpecID = subParameters[parameterC.AccessSpecID].readUInt32BE(0);
                         }
 
-                        if (subParameters[parameterC.FirstSeenTimestampUTC]) {
+                        if (subParameters[parameterC.FirstSeenTimestampUTC] && subParameters[parameterC.FirstSeenTimestampUTC].length >= 8) {
                             // Note: Here is losing precision because JS numbers are defined to be double floats
                             const firstSeenTimestampUTCus: Int64 = new Int64(subParameters[parameterC.FirstSeenTimestampUTC], 0);
                             tag.firstSeenTimestampUTC = firstSeenTimestampUTCus.toNumber(true); // microseconds
                         }
 
-                        if (subParameters[parameterC.LastSeenTimestampUTC]) {
+                        if (subParameters[parameterC.LastSeenTimestampUTC] && subParameters[parameterC.LastSeenTimestampUTC].length >= 8) {
                             // Note: Here is losing precision because JS numbers are defined to be double floats
                             const lastSeenTimestampUTCus: Int64 = new Int64(subParameters[parameterC.LastSeenTimestampUTC], 0);
                             tag.lastSeenTimestampUTC = lastSeenTimestampUTCus.toNumber(true); // microseconds
@@ -390,7 +414,7 @@ export class LLRP extends EventEmitter implements LlrpReader {
 
                         if (subParameters[parameterC.Custom]) {
                             tag.custom = subParameters[parameterC.Custom].toString('hex');
-                            if (this.radioOperationConfig.enableReadingTid && this.isExtensionsEnabled) {
+                            if (this.radioOperationConfig.enableReadingTid && this.isExtensionsEnabled && subParameters[parameterC.Custom].length >= 10) {
                                 // parse impinj parameter
                                 const impinjParameterSubtype: number = subParameters[parameterC.Custom].readUInt32BE(4);
                                 switch (impinjParameterSubtype) {
@@ -401,7 +425,7 @@ export class LLRP extends EventEmitter implements LlrpReader {
                             }
                         }
 
-                        this.log(`\tEPCData: ${tag.EPCData} \tEPC96: ${tag.EPC96} \tTID: ${tag.TID} \tRead count: ${tag.tagSeenCount} \tAntenna ID: ${tag.antennaID} \tLastSeenTimestampUTC: ${tag.lastSeenTimestampUTC}`);
+                        //this.log(`\tEPCData: ${tag.EPCData} \tEPC96: ${tag.EPC96} \tTID: ${tag.TID} \tRead count: ${tag.tagSeenCount} \tAntenna ID: ${tag.antennaID} \tLastSeenTimestampUTC: ${tag.lastSeenTimestampUTC}`);
 
                         if (tag.TID || tag.EPCData || tag.EPC96) {
                             process.nextTick(() => {

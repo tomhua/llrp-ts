@@ -40,6 +40,7 @@ export interface ReaderConfig {
     isReaderConfigSet?: boolean;
     isStartROSpecSent?: boolean;
     isReaderConfigReset?: boolean;
+    autoStartScan?: boolean;
 }
 
 export interface LlrpReader {

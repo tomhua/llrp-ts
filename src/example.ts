@@ -6,50 +6,51 @@ import { ReaderConfig, TagInformation } from './interfaces/llrp.js';
 const config: ReaderConfig = {
     ipaddress: '192.168.1.53',
     port : 5084,
+    autoStartScan: false,
     radioOperationConfig: {
         enableReadingTid: true,
-        modeIndex: 1002,
+        modeIndex: 1003,
         tagPopulation: 32,
         channelIndex: 1,
         inventorySearchMode: 2, // 1 - Single target (impinj custom parameter)
         antennasConfig: [
-            { number: 1, power: 30 }, // 天线 1
-            { number: 2, power: 30 }, // 天线 2
-            { number: 3, power: 30 }, // 天线 3
-            { number: 4, power: 30 }, // 天线 4
-            { number: 5, power: 30 }, // 天线 4
-            { number: 6, power: 30 }, // 天线 4
-            { number: 7, power: 30 }, // 天线 4
-            { number: 8, power: 30 }, // 天线 4
-            { number: 9, power: 30 }, // 天线 4
-            { number: 10, power: 30 }, // 天线 4
-            { number: 11, power: 30 }, // 天线 4
-            { number: 12, power: 30 }, // 天线 4
-            { number: 13, power: 30 }, // 天线 4
-            { number: 14, power: 30 }, // 天线 4
-            { number: 15, power: 30 }, // 天线 4
-            { number: 16, power: 30 }, // 天线 4
-            { number: 17, power: 30 }, // 天线 4
-            { number: 18, power: 30 }, // 天线 4
-            { number: 19, power: 30 }, // 天线 4
-            { number: 20, power: 30 }, // 天线 4
-            { number: 21, power: 30 }, // 天线 4
-            { number: 22, power: 30 }, // 天线 4
-            { number: 23, power: 30 }, // 天线 4
-            { number: 24, power: 30 }, // 天线 4
-            { number: 25, power: 30 }, // 天线 4
-            { number: 26, power: 30 }, // 天线 4
-            { number: 27, power: 30 }, // 天线 4
-            { number: 28, power: 30 }, // 天线 4
-            { number: 29, power: 30 }, // 天线 4
-            { number: 30, power: 30 }, // 天线 4
-            { number: 31, power: 30 }, // 天线 4
-            { number: 32, power: 30 } // 天线 4
+            { number: 1, power: 31.5 }, // 天线 1
+            { number: 2, power: 31.5 }, // 天线 2
+            { number: 3, power: 31.5 }, // 天线 3
+            { number: 4, power: 31.5 }, // 天线 4
+            { number: 5, power: 31.5 }, // 天线 4
+            { number: 6, power: 31.5 }, // 天线 4
+            { number: 7, power: 31.5 }, // 天线 4
+            { number: 8, power: 31.5 }, // 天线 4
+            { number: 9, power: 31.5 }, // 天线 4
+            { number: 10, power: 31.5 }, // 天线 4
+            { number: 11, power: 31.5 }, // 天线 4
+            { number: 12, power: 31.5 }, // 天线 4
+            { number: 13, power: 31.5 }, // 天线 4
+            { number: 14, power: 31.5 }, // 天线 4
+            { number: 15, power: 31.5 }, // 天线 4
+            { number: 16, power: 31.5 }, // 天线 4
+            { number: 17, power: 31.5 }, // 天线 4
+            { number: 18, power: 31.5 }, // 天线 4
+            { number: 19, power: 31.5 }, // 天线 4
+            { number: 20, power: 31.5 }, // 天线 4
+            { number: 21, power: 31.5 }, // 天线 4
+            { number: 22, power: 31.5 }, // 天线 4
+            { number: 23, power: 31.5 }, // 天线 4
+            { number: 24, power: 31.5 }, // 天线 4
+            { number: 25, power: 31.5 }, // 天线 4
+            { number: 26, power: 31.5 }, // 天线 4
+            { number: 27, power: 31.5 }, // 天线 4
+            { number: 28, power: 31.5 }, // 天线 4
+            { number: 29, power: 31.5 }, // 天线 4
+            { number: 30, power: 31.5 }, // 天线 4
+            { number: 31, power: 31.5 }, // 天线 4
+            { number: 32, power: 31.5 } // 天线 4
         ]
     }
 };
 
-const reader: LLRP = new LLRP(config, console);
+const reader: LLRP = new LLRP(config, null);
 
 reader.connect();
 
@@ -58,7 +59,7 @@ reader.on(RfidReaderEvent.Timeout, () => {
 });
 
 reader.on(RfidReaderEvent.Disconnect, (error: Error) => {
-    console.log('disconnect', error);
+    console.log('连接已断开:', error.message);
 });
 
 reader.on(RfidReaderEvent.Error, (error: any) => {
@@ -78,30 +79,25 @@ reader.on(RfidReaderEvent.LlrpError, (error: Error) => {
 });
 
 reader.on(RfidReaderEvent.DidSeeTag, (tag: TagInformation) => {
-    console.log(`Read: ${ JSON.stringify(tag) }`);
+    console.log(`Read: ${ tag.EPCData }`);
     // if (tag.EPC96) console.log('EPC96: ' + JSON.stringify(tag.EPC96));
     // if (tag.EPCData) console.log('EPCData: ' + JSON.stringify(tag.EPCData));
     // if (tag.TID) console.log('TID: ' + JSON.stringify(tag.TID));
 });
 
-setInterval(
-    () => {
+reader.on(RfidReaderEvent.Connected, () => {
+    setTimeout(() => {
+        reader.enableRFTransmitter();
+        console.log('RFID:enable rfid');
+    }, 10000);
+
+    setTimeout(() => {
         reader.disableRFTransmitter();
         console.log('RFID:disable rfid');
-    },
-    10000
-);
+    }, 50000);
+});
 
-setTimeout(
-    () => setInterval(
-        () => {
-            reader.enableRFTransmitter();
-            console.log('RFID:enable rfid');
-        },
-        10000
-    ),
-    5000
-);
+
 
 function normalExit(): void {
     reader.disconnect();
@@ -124,13 +120,13 @@ process.on('SIGTERM', () => {
 });
 
 // catches uncaught exceptions
-process.on('uncaughtException', () => {
-    console.log('uncaughtException');
-    normalExit();
-});
+// process.on('uncaughtException', () => {
+//     console.log('uncaughtException');
+//     normalExit();
+// });
 
 // catches unhandled promise rejection
-process.on('unhandledRejection', () => {
-    console.log('unhandledRejection');
-    normalExit();
-});
+// process.on('unhandledRejection', () => {
+//     console.log('unhandledRejection');
+//     normalExit();
+// });

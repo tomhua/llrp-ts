@@ -11,14 +11,20 @@ import { ObjectMessageElement, ObjectParameterElement } from './interfaces/decod
  */
 export const decodeMessage: Function = function (buffer: Buffer, returnObject: ObjectMessageElement[] = []): ObjectMessageElement[] {
 
-    // if we have an empty Buffer object.
-    if (buffer.length === 0) {
+    // if we have an empty Buffer object or buffer is too small to be a valid LLRP message.
+    // LLRP message header is at least 10 bytes: 2 bytes type + 4 bytes length + 4 bytes ID
+    if (buffer.length === 0 || buffer.length < 10) {
         // end the recursion.
         return undefined;
     }
 
     // set variables
     const length: number = buffer.readUInt32BE(2); // length would be read from the 3rd octet, 4 octets.
+
+    // check if length is valid and buffer has enough data
+    if (length < 10 || length > buffer.length) {
+        return undefined;
+    }
 
     // add to our returnObject our LLRPMessage key value pair.
     returnObject.push({
@@ -31,7 +37,9 @@ export const decodeMessage: Function = function (buffer: Buffer, returnObject: O
     // check if there are still parameters following this parameter.
     // if none, undefined will be returned and will not reach the step
     // of getting added to the returnObject.
-    decodeMessage(buffer.slice(length), returnObject);
+    if (length < buffer.length) {
+        decodeMessage(buffer.slice(length), returnObject);
+    }
 
     return returnObject;
 };
@@ -46,7 +54,7 @@ export const decodeMessage: Function = function (buffer: Buffer, returnObject: O
  */
 export const decodeParameter: Function = (buffer: Buffer, returnObject: ObjectParameterElement[] = []): ObjectParameterElement[] => {
 
-    // if we have an empty Buffer object.
+    // if we have an empty Buffer object or buffer is too small.
     if (buffer.length === 0) {
         return undefined;
     }
@@ -62,12 +70,29 @@ export const decodeParameter: Function = (buffer: Buffer, returnObject: ObjectPa
     if (buffer[0] & 128) {
         type = buffer[0] & 127; // type is the first 7 bits of the first octet.
         length = parameterC.tvLengths[type]; // each TV has a defined length, we reference in our parameter constant.
+        
+        // check if length is valid
+        if (!length || length < 1 || length > buffer.length) {
+            return undefined;
+        }
+        
         // since it is not present in a TV encoded buffer.
         value = buffer.slice(1, length); // the value in a TV starts from the second octet up the entire length of the buffer.
         reserved = 1; // reserved is set as 1 on the first octet's most significant bit.
     } else {
+        // TLV encoded - needs at least 4 bytes (2 for type, 2 for length)
+        if (buffer.length < 4) {
+            return undefined;
+        }
+        
         type = ((buffer[0] & 3) << 8) | buffer[1]; // type is the first 2 bits of the first octet and the second octet.
         length = buffer.readUInt16BE(2); // each TLV has length in the third and fourth octet.
+        
+        // check if length is valid
+        if (length < 4 || length > buffer.length) {
+            return undefined;
+        }
+        
         value = buffer.slice(4, length); // the value in a TLV starts from the fifth octet up the entire length of the buffer.
     }
 
@@ -91,7 +116,9 @@ export const decodeParameter: Function = (buffer: Buffer, returnObject: ObjectPa
     // check if there are still parameters following this parameter.
     // if none, undefined will be returned and will not reach the step
     // of getting added to the returnObject.
-    decodeParameter(buffer.slice(length), returnObject);
+    if (length < buffer.length) {
+        decodeParameter(buffer.slice(length), returnObject);
+    }
 
     return returnObject;
 };
