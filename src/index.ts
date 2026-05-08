@@ -149,7 +149,9 @@ export class LLRP extends EventEmitter implements LlrpReader {
         
         if (!this.isReaderConfigSet) {
             this.handleReaderConfiguration();
-        } else if (!this.isStartROSpecSent) {
+        } else if (this.isRoSpecAdded) {
+            this.sendEnableRospec(true);
+        } else {
             this.sendMessage(
                 this.client,
                 GetLlrpMessage.addRoSpec(
@@ -158,8 +160,6 @@ export class LLRP extends EventEmitter implements LlrpReader {
                 )
             );
             this.isRoSpecAdded = true;
-        } else {
-            this.sendEnableRospec(true);
         }
 
         return true;
@@ -274,6 +274,7 @@ export class LLRP extends EventEmitter implements LlrpReader {
                     const errorDescriptionByteCount: number = decodedParameters.value.readInt16BE(2);
                     const errorDescriptionBuffer: Buffer = Buffer.allocUnsafe(errorDescriptionByteCount);
                     decodedParameters.value.copy(errorDescriptionBuffer, 0, 4, errorDescriptionByteCount + 4);
+
                     const errorDescription: string = `${errorDescriptionBuffer.toString('utf8')} in ${message.getTypeName()}`;
                     this.emit(RfidReaderEvent.LlrpError, new Error(`${statusCode}: ${errorDescription}`));
                 }
