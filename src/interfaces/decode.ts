@@ -11,5 +11,5 @@ export interface ObjectParameterElement {
     length: number;
     value: Buffer;
     reserved: number;
-    subParameters: ObjectParameterElement;
+    subParameters: ObjectParameterElement[] | null;
 }

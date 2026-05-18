@@ -29,7 +29,7 @@ export class LLRPParameter implements LlrpParameter {
             value: data.value,
             bits: data.value.length * 8
         };
-        this.subParameters = data.subParameters;
+        this.subParameters = data.subParameters || Buffer.alloc(0);
 
         // check if it is TV encoded.
         if (this.isTV(this.type.value)) {

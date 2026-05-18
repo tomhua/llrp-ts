@@ -5,12 +5,12 @@ export class LLRPMessage implements LlrpMessage {
     public parameter: {
         value: Buffer;
         bits: number;
-    };
+    } = { value: Buffer.alloc(0), bits: 0 };
     private version: LlrpFieldType = {
         value: 1, // set default version 1.
         bits: 3
     };
-    private type: LlrpFieldType;
+    private type: LlrpFieldType = { value: 0, bits: 10 };
     private id: LlrpFieldType = {
         value: 0,
         bits: 32

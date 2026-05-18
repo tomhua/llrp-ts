@@ -59,7 +59,7 @@ export class GetLlrpMessage {
         //   |-----C1G2 RF Control
         //   |-----C1G2 Singulation Control
         let aiSpecParams: Buffer;
-        const antennaCount: number = parameters.antennasConfig.length;
+        const antennaCount: number = parameters.antennasConfig?.length || 0;
         const сonfigEachAntenna: boolean = !!(parameters.antennasConfig && antennaCount);
 
         if (сonfigEachAntenna) {
@@ -90,14 +90,14 @@ export class GetLlrpMessage {
         inventoryParameterSpecParams.writeUInt8(protocolId, 2);
 
         if (сonfigEachAntenna) {
-            parameters.antennasConfig.forEach(
+            parameters.antennasConfig!.forEach(
                 (config: AntennaConfig, index: number) => {
                     antennaConfiguration = GetLlrpMessage.getAntennaConfig(
                         config.number,
                         this.getAntennaTransmitPowerIndex(config.power),
                         parameters.channelIndex,
                         parameters.inventorySearchMode,
-                        parameters.modeIndex,
+                        parameters.modeIndex || 0,
                         parameters.tagPopulation
                     );
                     antennaConfiguration.copy(inventoryParameterSpecParams, (index * antennaConfiguration.length) + 3);

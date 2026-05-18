@@ -1,11 +1,11 @@
 export interface ParameterConstants {
-    tvLengths?: {
+    tvLengths: {
         [key: string]: number;
     };
-    staticLengths?: {
+    staticLengths: {
         [key: string]: number;
     };
-    hasSubParameters?: {
+    hasSubParameters: {
         [key: string]: boolean;
     };
     [key: string]: any;

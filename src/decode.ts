@@ -9,7 +9,7 @@ import { ObjectMessageElement, ObjectParameterElement } from './interfaces/decod
  * @param  {Buffer} buffer  A buffer object.
  * @return {Object}         A key value pair that can be used to create a new LLRPMessage.
  */
-export const decodeMessage: Function = function (buffer: Buffer, returnObject: ObjectMessageElement[] = []): ObjectMessageElement[] {
+export const decodeMessage: Function = function (buffer: Buffer, returnObject: ObjectMessageElement[] = []): ObjectMessageElement[] | undefined {
 
     // if we have an empty Buffer object or buffer is too small to be a valid LLRP message.
     // LLRP message header is at least 10 bytes: 2 bytes type + 4 bytes length + 4 bytes ID
@@ -52,7 +52,7 @@ export const decodeMessage: Function = function (buffer: Buffer, returnObject: O
  * @param  {Array} returnObject  An array containing objects for LLRPParameter, recursion.
  * @return {Array}               An array containing all the decoded objects.
  */
-export const decodeParameter: Function = (buffer: Buffer, returnObject: ObjectParameterElement[] = []): ObjectParameterElement[] => {
+export const decodeParameter: Function = (buffer: Buffer, returnObject: ObjectParameterElement[] = []): ObjectParameterElement[] | undefined => {
 
     // if we have an empty Buffer object or buffer is too small.
     if (buffer.length === 0) {
@@ -60,22 +60,23 @@ export const decodeParameter: Function = (buffer: Buffer, returnObject: ObjectPa
     }
 
     // set variables.
-    let type: number = null;
+    let type: number | null = null;
     let length: number = 0;
-    let value: Buffer = null;
-    let subParameters: ObjectParameterElement = null;
+    let value: Buffer | null = null;
+    let subParameters: ObjectParameterElement[] | null = null;
     let reserved: number = 0;
 
     // if is TV-encoded (starts with first bit set as 1)
     if (buffer[0] & 128) {
         type = buffer[0] & 127; // type is the first 7 bits of the first octet.
-        length = parameterC.tvLengths[type]; // each TV has a defined length, we reference in our parameter constant.
-        
+        const tvLengths = parameterC.tvLengths;
+        length = tvLengths ? tvLengths[type] || 0 : 0;
+
         // check if length is valid
         if (!length || length < 1 || length > buffer.length) {
             return undefined;
         }
-        
+
         // since it is not present in a TV encoded buffer.
         value = buffer.slice(1, length); // the value in a TV starts from the second octet up the entire length of the buffer.
         reserved = 1; // reserved is set as 1 on the first octet's most significant bit.
@@ -84,34 +85,42 @@ export const decodeParameter: Function = (buffer: Buffer, returnObject: ObjectPa
         if (buffer.length < 4) {
             return undefined;
         }
-        
+
         type = ((buffer[0] & 3) << 8) | buffer[1]; // type is the first 2 bits of the first octet and the second octet.
         length = buffer.readUInt16BE(2); // each TLV has length in the third and fourth octet.
-        
+
         // check if length is valid
         if (length < 4 || length > buffer.length) {
             return undefined;
         }
-        
+
         value = buffer.slice(4, length); // the value in a TLV starts from the fifth octet up the entire length of the buffer.
     }
 
     // see if our parameter constant lists this buffer as having subParameters
-    if (parameterC.hasSubParameters[type]) {
+    if (type !== null && value && parameterC.hasSubParameters && parameterC.hasSubParameters[type]) {
         // check for subParameter via recursion.
         // undefined will be returned if none is found.
-        subParameters = decodeParameter(value.slice(parameterC.staticLengths[type] - (length - value.length)));
+        const staticLengths = parameterC.staticLengths;
+        if (staticLengths && typeof staticLengths[type] === 'number') {
+            const result = decodeParameter(value.slice(staticLengths[type] - (length - value.length)));
+            if (result) {
+                subParameters = result;
+            }
+        }
     }
 
     // add to our returnObject our LLRPParameter key value pair.
-    returnObject.push({
-        type,
-        length,
-        value,
-        reserved,
-        subParameters,
-        typeName: parameterC[type],
-    });
+    if (type !== null && value) {
+        returnObject.push({
+            type,
+            length,
+            value,
+            reserved,
+            subParameters: subParameters || [],
+            typeName: parameterC[type] || '',
+        });
+    }
 
     // check if there are still parameters following this parameter.
     // if none, undefined will be returned and will not reach the step

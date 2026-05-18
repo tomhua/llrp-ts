@@ -45,9 +45,9 @@ export class LLRP extends EventEmitter implements LlrpReader {
     private isRoSpecAdded: boolean = false;
 
     private socket: net.Socket = new net.Socket();
-    private client: net.Socket = null;
+    private client: net.Socket | null = null;
     public connected: boolean = false;
-    private lastLlrpStatusCode: number;
+    private lastLlrpStatusCode: number = 0;
 
     constructor(config: ReaderConfig, private logger?: Logger) {
         super();
@@ -515,6 +515,9 @@ export class LLRP extends EventEmitter implements LlrpReader {
         // create an object that will hold a key valuemapSubParameters pair.
         const properties: any = {};
         const subP: any = decodedParameters.subParameters;
+        if (!subP) {
+            return properties;
+        }
         for (const tag in subP) {
             // where key is the Parameter type.
             // and value is the Parameter value as Buffer object.
