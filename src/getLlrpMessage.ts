@@ -66,7 +66,7 @@ export class GetLlrpMessage {
             // set active antennas from config
             aiSpecParams = Buffer.allocUnsafe(antennaCount * 2 + 2);
             aiSpecParams.writeUInt16BE(antennaCount, 0);
-            parameters.antennasConfig.forEach(
+            parameters.antennasConfig!.forEach(
                 (config: AntennaConfig, index: number) => {
                     aiSpecParams.writeUInt16BE(config.number, (index + 1) * 2);
                 }
@@ -98,7 +98,7 @@ export class GetLlrpMessage {
                         parameters.channelIndex,
                         parameters.inventorySearchMode,
                         parameters.modeIndex || 0,
-                        parameters.tagPopulation
+                        parameters.tagPopulation || 0
                     );
                     antennaConfiguration.copy(inventoryParameterSpecParams, (index * antennaConfiguration.length) + 3);
                 }

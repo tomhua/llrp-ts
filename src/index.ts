@@ -307,7 +307,7 @@ export class LLRP extends EventEmitter implements LlrpReader {
 
         // global configuration and enabling reports has not been set.
         if (!this.isReaderConfigReset) {                   // reset them.
-            this.client.write(GetLlrpMessage.resetConfigurationToFactoryDefaults());
+            this.sendMessage(this.client, GetLlrpMessage.resetConfigurationToFactoryDefaults());
             this.isReaderConfigReset = true;               // we have reset the reader configuration.
         } else if (this.autoStartScan) {
             this.sendStartROSpec();
@@ -445,14 +445,14 @@ export class LLRP extends EventEmitter implements LlrpReader {
      * @param  {[type]} client  rfid connection.
      * @param  {Buffer} buffer  to write.
      */
-    private sendMessage(client: net.Socket, buffer: Buffer): void {
+    private sendMessage(client: net.Socket | null, buffer: Buffer): void {
         if (!client || (client && client.destroyed)) {
             return;
         }
 
         process.nextTick(() => {
             this.log(`Sending ${this.getMessageName(buffer)}`);
-            this.client.write(buffer);
+            client.write(buffer);
         });
     }
 

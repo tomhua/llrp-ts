@@ -50,7 +50,7 @@ const config: ReaderConfig = {
     }
 };
 
-const reader: LLRP = new LLRP(config, null);
+const reader: LLRP = new LLRP(config, undefined);
 
 reader.connect();
 
